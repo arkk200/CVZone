@@ -20,8 +20,6 @@ detector = PoseDetector()
 
 @socketio.on('pose')
 def handle_pose(data):
-    data
-    
     data = re.sub("^data:image/.+;base64,", "", data)
     d = base64.b64decode(data)
     

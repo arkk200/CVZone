@@ -1,5 +1,7 @@
 # CVZone을 이용한 실시간 포즈 인식
 
+![](demo.png)
+
 # 실행 방법
 
 ## 서버
@@ -9,12 +11,12 @@
 
 ### 설치해야 할 패키지
 
-Flask==3.0.3,
-Flask-Cors==4.0.1,
-Flask-SocketIO==5.3.6,
-opencv-python==4.10.0.84,
-cvzone==1.6.1,
-numpy==1.24.4
+Flask\=\=3.0.3,
+Flask-Cors\=\=4.0.1,
+Flask-SocketIO\=\=5.3.6,
+opencv-python\=\=4.10.0.84,
+cvzone\=\=1.6.1,
+numpy\=\=1.24.4
 
 ## 클라이언트
 Visual Studio Code에서 Extension으로 Live Server를 설치해 주세요
