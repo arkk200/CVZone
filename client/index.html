@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Webcam Pose Detection</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  </head>
+  <body>
+    <video id="webcam" autoplay playsinline></video>
+    <canvas id="canvas" style="display: none"></canvas>
+    <img id="poseImage" alt="Pose Image" />
+    <script type="module">
+      import {
+        encode,
+        decode,
+      } from "https://cdn.jsdelivr.net/npm/js-base64@3.7.7/base64.mjs";
+
+      const video = document.getElementById("webcam");
+      const canvas = document.getElementById("canvas");
+      const context = canvas.getContext("2d");
+      const poseImage = document.getElementById("poseImage");
+
+      const socket = io("ws://10.129.56.66:5000");
+
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => {
+          video.srcObject = stream;
+        })
+        .catch((err) => {
+          console.error("Error accessing webcam:", err);
+        });
+
+      const captureFrame = () => {
+        if (video.paused || video.ended) {
+          return;
+        }
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const dataURL = canvas.toDataURL("image/jpeg");
+
+        socket.emit("pose", dataURL);
+      };
+
+      video.addEventListener("play", () => {
+        captureFrame();
+      });
+
+      function b64toBlob(b64Data, contentType = "", sliceSize = 512) {
+        const image_data = atob(b64Data);
+
+        const arraybuffer = new ArrayBuffer(image_data.length);
+        const view = new Uint8Array(arraybuffer);
+
+        for (let i = 0; i < image_data.length; i++) {
+          view[i] = image_data.charCodeAt(i) & 0xff;
+        }
+
+        return new Blob([arraybuffer], { type: contentType });
+      }
+
+      socket.on("pose", (data) => {
+        poseImage.src = `data:image/jpeg;base64,${data}`;
+        captureFrame();
+      });
+    </script>
+  </body>
+</html>
